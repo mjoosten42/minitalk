@@ -9,10 +9,10 @@ LIBFT = libft/libft.a
 
 all: $(NAME) $(CLIENT)
 
-$(NAME): $(OBJSERVER) $(LIBFT)
+$(NAME): $(LIBFT) $(OBJSERVER)
 	gcc $(FLAGS) -o $@ $^
 
-$(CLIENT): $(OBJCLIENT) $(LIBFT)
+$(CLIENT): $(LIBFT) $(OBJCLIENT)
 	gcc $(FLAGS) -o $@ $^
 
 $(LIBFT):
@@ -22,7 +22,8 @@ $(LIBFT):
 	gcc $(FLAGS) -c $^
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJSERVER)
+	rm -f $(OBJCLIENT)
 	make fclean -C libft
 
 fclean: clean
