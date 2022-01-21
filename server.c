@@ -6,7 +6,7 @@
 /*   By: mjoosten <mjoosten@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 14:44:19 by mjoosten          #+#    #+#             */
-/*   Updated: 2022/01/21 14:50:00 by mjoosten         ###   ########.fr       */
+/*   Updated: 2022/01/21 14:55:59 by mjoosten         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,10 +51,7 @@ void	ft_addbit(int bit, pid_t client)
 		if (c)
 			write(1, &c, 1);
 		else
-		{
-			write(1, "\n", 1);
 			kill(client, SIGUSR1);
-		}
 		c = 0;
 		i = 0;
 	}
