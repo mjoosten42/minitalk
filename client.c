@@ -6,7 +6,7 @@
 /*   By: mjoosten <mjoosten@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 14:44:39 by mjoosten          #+#    #+#             */
-/*   Updated: 2022/01/21 14:55:49 by mjoosten         ###   ########.fr       */
+/*   Updated: 2022/01/21 16:38:20 by mjoosten         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int	main(int argc, char *argv[])
 	if (argc != 3)
 		return (1);
 	signal(SIGUSR1, ft_signal);
+	signal(SIGUSR2, ft_signal);
 	while (1)
 	{
 		i = 0;
@@ -36,21 +37,18 @@ int	main(int argc, char *argv[])
 				kill(ft_atoi(argv[1]), SIGUSR2);
 			else
 				kill(ft_atoi(argv[1]), SIGUSR1);
+			pause();
 			c = c << 1;
 			i++;
-			usleep(42);
 		}
-		if (*argv[2] == 0)
-			while (1)
-				;
 		argv[2]++;
 	}
 }
 
 void	ft_signal(int signum)
 {
-	(void)signum;
-	exit(EXIT_SUCCESS);
+	if (signum == SIGUSR2)
+		exit(EXIT_SUCCESS);
 }
 
 int	ft_atoi(char *str)
@@ -60,6 +58,8 @@ int	ft_atoi(char *str)
 	result = 0;
 	while (ft_isdigit(*str))
 		result = 10 * result + *str++ - '0';
+	if (*str)
+		exit(EXIT_FAILURE);
 	return (result);
 }
 
