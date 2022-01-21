@@ -6,24 +6,22 @@
 /*   By: mjoosten <mjoosten@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 14:44:19 by mjoosten          #+#    #+#             */
-/*   Updated: 2022/01/21 14:23:22 by mjoosten         ###   ########.fr       */
+/*   Updated: 2022/01/21 14:50:00 by mjoosten         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <signal.h>			//	sigaction 
-							//	getpid()
-#include "libft/libft.h"	//	ft_putnbr()
-							//	write()
+#include <signal.h>
+#include <unistd.h>
 
 void	ft_setsigaction(void);
 void	ft_addbit(int bit, pid_t client);
-void	ft_sigusr1(int signum, siginfo_t *info, void *ucontext);
-void	ft_sigusr2(int signum, siginfo_t *info, void *ucontext);
+void	ft_sigusr(int signum, siginfo_t *info, void *ucontext);
+void	ft_putnbr(int n);
 
 int	main(void)
 {
 	ft_setsigaction();
-	ft_putnbr_fd(getpid(), 1);
+	ft_putnbr(getpid());
 	write(1, "\n", 1);
 	while (1)
 		;
@@ -31,15 +29,12 @@ int	main(void)
 
 void	ft_setsigaction(void)
 {
-	struct sigaction	usr1;
-	struct sigaction	usr2;
+	struct sigaction	usr;
 
-	usr1.sa_sigaction = ft_sigusr1;
-	usr1.sa_flags = SIGINFO;
-	usr2.sa_sigaction = ft_sigusr2;
-	usr2.sa_flags = SIGINFO;
-	sigaction(SIGUSR1, &usr1, 0);
-	sigaction(SIGUSR2, &usr2, 0);
+	usr.sa_sigaction = ft_sigusr;
+	usr.sa_flags = SIGINFO;
+	sigaction(SIGUSR1, &usr, 0);
+	sigaction(SIGUSR2, &usr, 0);
 }
 
 void	ft_addbit(int bit, pid_t client)
@@ -66,16 +61,21 @@ void	ft_addbit(int bit, pid_t client)
 	ft_setsigaction();
 }
 
-void	ft_sigusr1(int signum, siginfo_t *info, void *ucontext)
+void	ft_sigusr(int signum, siginfo_t *info, void *ucontext)
 {
-	ft_addbit(0, info->si_pid);
-	(void)signum;
+	if (signum == SIGUSR1)
+		ft_addbit(0, info->si_pid);
+	if (signum == SIGUSR2)
+		ft_addbit(1, info->si_pid);
 	(void)ucontext;
 }
 
-void	ft_sigusr2(int signum, siginfo_t *info, void *ucontext)
+void	ft_putnbr(int n)
 {
-	ft_addbit(1, info->si_pid);
-	(void)signum;
-	(void)ucontext;
+	char	c;
+
+	if (n / 10)
+		ft_putnbr(n / 10);
+	c = '0' + n % 10;
+	write(1, &c, 1);
 }
