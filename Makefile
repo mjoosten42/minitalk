@@ -1,18 +1,14 @@
 NAME = server
 CLIENT = client
 FLAGS = -Wall -Werror -Wextra
-SRCSERVER = server.c
-SRCCLIENT = client.c
-OBJSERVER = $(SRCSERVER:.c=.o)
-OBJCLIENT = $(SRCCLIENT:.c=.o)
 LIBFT = libft/libft.a
 
 all: $(NAME) $(CLIENT)
 
-$(NAME): $(LIBFT) $(OBJSERVER)
+$(NAME): $(LIBFT) $(NAME).o
 	gcc $(FLAGS) -o $@ $^
 
-$(CLIENT): $(LIBFT) $(OBJCLIENT)
+$(CLIENT): $(LIBFT) $(CLIENT).o
 	gcc $(FLAGS) -o $@ $^
 
 $(LIBFT):
@@ -22,8 +18,7 @@ $(LIBFT):
 	gcc $(FLAGS) -c $^
 
 clean:
-	rm -f $(OBJSERVER)
-	rm -f $(OBJCLIENT)
+	rm -f $(NAME).o $(CLIENT).o
 	make fclean -C libft
 
 fclean: clean
