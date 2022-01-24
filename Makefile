@@ -1,10 +1,11 @@
-NAME = server
+NAME = $(SERVER) $(CLIENT)
+SERVER = server
 CLIENT = client
 FLAGS = -Wall -Werror -Wextra
 
-all: $(NAME) $(CLIENT)
+all: $(NAME)
 
-$(NAME): $(NAME).o
+$(SERVER): $(SERVER).o
 	gcc $(FLAGS) -o $@ $^
 
 $(CLIENT): $(CLIENT).o
@@ -14,10 +15,10 @@ $(CLIENT): $(CLIENT).o
 	gcc $(FLAGS) -c $^
 
 clean:
-	rm -f $(NAME).o $(CLIENT).o
+	rm -f $(SERVER).o $(CLIENT).o
 
 fclean: clean
-	rm -f $(NAME) $(CLIENT)
+	rm -f $(NAME)
 
 re: fclean all
 

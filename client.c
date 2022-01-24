@@ -6,7 +6,7 @@
 /*   By: mjoosten <mjoosten@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 14:44:39 by mjoosten          #+#    #+#             */
-/*   Updated: 2022/01/21 16:38:20 by mjoosten         ###   ########.fr       */
+/*   Updated: 2022/01/24 12:43:42 by mjoosten         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,41 +14,51 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void	ft_signal(int signum);
+char	*g_str;
+
+void	ft_setsigaction(void);
+void	ft_sendbit(pid_t client);
+void	ft_signal(int signum, siginfo_t *info, void *ucontext);
 int		ft_atoi(char *str);
-int		ft_isdigit(int c);
 
 int	main(int argc, char *argv[])
 {
-	char	c;
-	int		i;
-
 	if (argc != 3)
 		return (1);
-	signal(SIGUSR1, ft_signal);
-	signal(SIGUSR2, ft_signal);
+	g_str = argv[2];
+	ft_setsigaction();
+	ft_sendbit(ft_atoi(argv[1]));
 	while (1)
-	{
-		i = 0;
-		c = *argv[2];
-		while (i < 8)
-		{
-			if (c < 0)
-				kill(ft_atoi(argv[1]), SIGUSR2);
-			else
-				kill(ft_atoi(argv[1]), SIGUSR1);
-			pause();
-			c = c << 1;
-			i++;
-		}
-		argv[2]++;
-	}
+		;
 }
 
-void	ft_signal(int signum)
+void	ft_sendbit(pid_t client)
 {
-	if (signum == SIGUSR2)
-		exit(EXIT_SUCCESS);
+	static char			c;
+	static int			i;
+
+	if (i == 8)
+	{
+		g_str++;
+		i = 0;
+		if (!*g_str)
+			exit(EXIT_SUCCESS);
+	}
+	c = *g_str;
+	*g_str = *g_str << 1;
+	i++;
+	if (c < 0)
+		kill(client, SIGUSR2);
+	else
+		kill(client, SIGUSR1);
+}
+
+void	ft_signal(int signum, siginfo_t *info, void *ucontext)
+{
+	ft_setsigaction();
+	ft_sendbit(info->si_pid);
+	(void)signum;
+	(void)ucontext;
 }
 
 int	ft_atoi(char *str)
@@ -56,16 +66,18 @@ int	ft_atoi(char *str)
 	long	result;
 
 	result = 0;
-	while (ft_isdigit(*str))
+	while (*str >= '0' && *str <= '9')
 		result = 10 * result + *str++ - '0';
 	if (*str)
 		exit(EXIT_FAILURE);
 	return (result);
 }
 
-int	ft_isdigit(int c)
+void	ft_setsigaction(void)
 {
-	if (c >= '0' && c <= '9')
-		return (1);
-	return (0);
+	struct sigaction	usr;
+
+	usr.sa_sigaction = ft_signal;
+	usr.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &usr, 0);
 }
