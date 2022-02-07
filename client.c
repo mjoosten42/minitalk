@@ -6,7 +6,7 @@
 /*   By: mjoosten <mjoosten@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 14:44:39 by mjoosten          #+#    #+#             */
-/*   Updated: 2022/01/24 13:27:12 by mjoosten         ###   ########.fr       */
+/*   Updated: 2022/02/07 10:58:43 by mjoosten         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,38 +14,38 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-char	*g_str;
-
 void	ft_setsigaction(void);
-void	ft_sendbit(pid_t client);
+void	ft_sendbit(pid_t client, char *str);
 void	ft_signal(int signum, siginfo_t *info, void *ucontext);
 int		ft_atoi(char *str);
 
 int	main(int argc, char *argv[])
 {
-	if (argc != 3)
+	if (argc != 3 || !*argv[2])
 		return (1);
-	g_str = argv[2];
 	ft_setsigaction();
-	ft_sendbit(ft_atoi(argv[1]));
+	ft_sendbit(ft_atoi(argv[1]), argv[2]);
 	while (1)
 		;
 }
 
-void	ft_sendbit(pid_t client)
+void	ft_sendbit(pid_t client, char *arg)
 {
-	static char			c;
-	static int			i;
+	static char	*str;
+	static int	i;
+	char		c;
 
+	if (!str)
+		str = arg;
 	if (i == 8)
 	{
-		g_str++;
+		str++;
 		i = 0;
-		if (!*g_str)
+		if (!*str)
 			exit(EXIT_SUCCESS);
 	}
-	c = *g_str;
-	*g_str = *g_str << 1;
+	c = *str;
+	*str = *str << 1;
 	i++;
 	if (c < 0)
 		kill(client, SIGUSR2);
@@ -56,7 +56,7 @@ void	ft_sendbit(pid_t client)
 void	ft_signal(int signum, siginfo_t *info, void *ucontext)
 {
 	ft_setsigaction();
-	ft_sendbit(info->si_pid);
+	ft_sendbit(info->si_pid, 0);
 	(void)signum;
 	(void)ucontext;
 }
