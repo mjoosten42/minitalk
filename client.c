@@ -6,13 +6,12 @@
 /*   By: mjoosten <mjoosten@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 14:44:39 by mjoosten          #+#    #+#             */
-/*   Updated: 2022/02/07 10:58:43 by mjoosten         ###   ########.fr       */
+/*   Updated: 2022/02/07 11:02:42 by mjoosten         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 void	ft_setsigaction(void);
 void	ft_sendbit(pid_t client, char *str);
