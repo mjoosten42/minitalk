@@ -6,7 +6,7 @@
 /*   By: mjoosten <mjoosten@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 14:44:19 by mjoosten          #+#    #+#             */
-/*   Updated: 2022/01/24 11:59:12 by mjoosten         ###   ########.fr       */
+/*   Updated: 2022/01/24 13:27:27 by mjoosten         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	ft_setsigaction(void)
 	struct sigaction	usr;
 
 	usr.sa_sigaction = ft_signal;
-	usr.sa_flags = SA_SIGINFO;
+	usr.sa_flags = SA_SIGINFO | SA_NODEFER;
 	sigaction(SIGUSR1, &usr, 0);
 	sigaction(SIGUSR2, &usr, 0);
 }
