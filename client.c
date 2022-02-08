@@ -6,26 +6,30 @@
 /*   By: mjoosten <mjoosten@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 14:44:39 by mjoosten          #+#    #+#             */
-/*   Updated: 2022/02/07 11:02:42 by mjoosten         ###   ########.fr       */
+/*   Updated: 2022/02/08 17:12:46 by mjoosten         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-void	ft_setsigaction(void);
 void	ft_sendbit(pid_t client, char *str);
 void	ft_signal(int signum, siginfo_t *info, void *ucontext);
 int		ft_atoi(char *str);
 
 int	main(int argc, char *argv[])
 {
+	struct sigaction	usr;
+
 	if (argc != 3 || !*argv[2])
 		return (1);
-	ft_setsigaction();
+	usr.sa_sigaction = ft_signal;
+	usr.sa_flags = SA_SIGINFO | SA_NODEFER;
+	sigaction(SIGUSR1, &usr, 0);
 	ft_sendbit(ft_atoi(argv[1]), argv[2]);
 	while (1)
-		;
+		pause();
 }
 
 void	ft_sendbit(pid_t client, char *arg)
@@ -54,7 +58,6 @@ void	ft_sendbit(pid_t client, char *arg)
 
 void	ft_signal(int signum, siginfo_t *info, void *ucontext)
 {
-	ft_setsigaction();
 	ft_sendbit(info->si_pid, 0);
 	(void)signum;
 	(void)ucontext;
@@ -70,13 +73,4 @@ int	ft_atoi(char *str)
 	if (*str)
 		exit(EXIT_FAILURE);
 	return (result);
-}
-
-void	ft_setsigaction(void)
-{
-	struct sigaction	usr;
-
-	usr.sa_sigaction = ft_signal;
-	usr.sa_flags = SA_SIGINFO | SA_NODEFER;
-	sigaction(SIGUSR1, &usr, 0);
 }

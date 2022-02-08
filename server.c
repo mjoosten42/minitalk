@@ -6,25 +6,29 @@
 /*   By: mjoosten <mjoosten@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 14:44:19 by mjoosten          #+#    #+#             */
-/*   Updated: 2022/01/24 13:27:27 by mjoosten         ###   ########.fr       */
+/*   Updated: 2022/02/08 17:12:27 by mjoosten         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <signal.h>
 #include <unistd.h>
 
-void	ft_setsigaction(void);
 void	ft_addbit(int bit, pid_t client);
 void	ft_signal(int signum, siginfo_t *info, void *ucontext);
 void	ft_putnbr(int n);
 
 int	main(void)
 {
-	ft_setsigaction();
+	struct sigaction	usr;
+
+	usr.sa_sigaction = ft_signal;
+	usr.sa_flags = SA_SIGINFO | SA_NODEFER;
+	sigaction(SIGUSR1, &usr, 0);
+	sigaction(SIGUSR2, &usr, 0);
 	ft_putnbr(getpid());
 	write(1, "\n", 1);
 	while (1)
-		;
+		pause();
 }
 
 void	ft_addbit(int bit, pid_t client)
@@ -47,7 +51,6 @@ void	ft_addbit(int bit, pid_t client)
 
 void	ft_signal(int signum, siginfo_t *info, void *ucontext)
 {
-	ft_setsigaction();
 	if (signum == SIGUSR1)
 		ft_addbit(0, info->si_pid);
 	if (signum == SIGUSR2)
@@ -63,14 +66,4 @@ void	ft_putnbr(int n)
 		ft_putnbr(n / 10);
 	c = '0' + n % 10;
 	write(1, &c, 1);
-}
-
-void	ft_setsigaction(void)
-{
-	struct sigaction	usr;
-
-	usr.sa_sigaction = ft_signal;
-	usr.sa_flags = SA_SIGINFO | SA_NODEFER;
-	sigaction(SIGUSR1, &usr, 0);
-	sigaction(SIGUSR2, &usr, 0);
 }
